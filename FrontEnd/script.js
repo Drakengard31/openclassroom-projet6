@@ -88,9 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setupFilters();
     }
 
-    init();
-
-    // Exemple de fonction protégée
+    // Fonction de suppression
     async function deleteWork(workId) {
         if (!isLoggedIn()) {
             alert('Veuillez vous connecter');
@@ -110,8 +108,194 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Erreur:', error);
         }
     }
+
+    // Fonction de déconnexion
     function logout() {
         localStorage.removeItem('authToken');
         window.location.reload();
     }
+
+    // Gestion de la modale
+    const modal = document.getElementById('modal');
+    const editButton = document.querySelector('.edit-button');
+    const closeModal = document.querySelector('.close-modal');
+    const galleryView = document.getElementById('gallery-view');
+    const addPhotoView = document.getElementById('add-photo-view');
+    const addPhotoBtn = document.getElementById('add-photo-btn');
+    const backBtn = document.getElementById('back-btn');
+    const photoInput = document.getElementById('photo-input');
+    const imagePreview = document.querySelector('.image-preview');
+    const addPhotoForm = document.getElementById('add-photo-form');
+    const validateBtn = document.getElementById('validate-btn');
+
+    // Ouvrir la modale
+    if (editButton) {
+        editButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            modal.style.display = 'flex';
+            loadModalGallery();
+        });
+    }
+
+    // Fermer la modale
+    closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    // Fermer en cliquant à l'extérieur
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Basculer vers la vue d'ajout de photo
+    addPhotoBtn.addEventListener('click', function() {
+        galleryView.style.display = 'none';
+        addPhotoView.style.display = 'block';
+        loadCategories();
+    });
+
+    // Revenir à la vue galerie
+    backBtn.addEventListener('click', function() {
+        addPhotoView.style.display = 'none';
+        galleryView.style.display = 'block';
+    });
+
+    // Prévisualisation de l'image
+    photoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                alert('Seuls les JPG et PNG sont acceptés');
+                return;
+            }
+
+            if (file.size > 4 * 1024 * 1024) {
+                alert('Le fichier est trop volumineux (max 4Mo)');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Soumission du formulaire d'ajout
+    addPhotoForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('photo-title').value;
+        const category = document.getElementById('photo-category').value;
+        const imageFile = photoInput.files[0];
+
+        // Validation
+        if (!title || !category || !imageFile) {
+            alert('Veuillez remplir tous les champs');
+            return;
+        }
+
+        // Désactiver le bouton pendant l'envoi
+        validateBtn.disabled = true;
+        validateBtn.textContent = 'Envoi en cours...';
+
+        try {
+            // Préparation des données
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('category', category);
+            formData.append('image', imageFile);
+
+            // Envoi à l'API
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: getAuthHeader(),
+                body: formData
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erreur lors de l\'ajout');
+            }
+
+            // Succès
+            alert('Photo ajoutée avec succès!');
+            addPhotoForm.reset();
+            imagePreview.style.display = 'none';
+            addPhotoView.style.display = 'none';
+            galleryView.style.display = 'block';
+
+            // Rechargement des galeries
+            loadModalGallery();
+            init();
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert(error.message || 'Une erreur est survenue');
+
+            // Gestion spécifique des erreurs 401 (non autorisé)
+            if (error.message.includes('401')) {
+                logout();
+            }
+        } finally {
+            validateBtn.disabled = false;
+            validateBtn.textContent = 'Valider';
+        }
+    });
+
+    // Charger la galerie dans la modale
+    function loadModalGallery() {
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(works => {
+                const modalGallery = document.querySelector('.modal-gallery');
+                modalGallery.innerHTML = '';
+
+                works.forEach(work => {
+                    const figure = document.createElement('figure');
+                    figure.dataset.id = work.id;
+
+                    const img = document.createElement('img');
+                    img.src = work.imageUrl;
+                    img.alt = work.title;
+
+                    const deleteIcon = document.createElement('span');
+                    deleteIcon.className = 'delete-icon';
+                    deleteIcon.innerHTML = '&times;';
+                    deleteIcon.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        deleteWork(work.id);
+                    });
+
+                    figure.appendChild(img);
+                    figure.appendChild(deleteIcon);
+                    modalGallery.appendChild(figure);
+                });
+            });
+    }
+
+    // Charger les catégories pour le formulaire
+    function loadCategories() {
+        fetch('http://localhost:5678/api/categories')
+            .then(response => response.json())
+            .then(categories => {
+                const categorySelect = document.getElementById('photo-category');
+                categorySelect.innerHTML = '<option value="">Sélectionnez une catégorie</option>';
+
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                });
+            });
+    }
+
+    // Initialiser l'application
+    init();
 });

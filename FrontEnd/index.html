@@ -116,6 +116,48 @@
 		</ul>
 	</nav>
 </footer>
+<div id="modal" class="modal" style="display: none;">
+	<div class="modal-content">
+		<span class="close-modal">&times;</span>
+
+		<div id="gallery-view">
+			<h3>Galerie photo</h3>
+			<div class="modal-gallery">
+
+			</div>
+			<button id="add-photo-btn">Ajouter une photo</button>
+		</div>
+
+
+		<div id="add-photo-view" style="display: none;">
+			<h3>Ajout photo</h3>
+			<form id="add-photo-form">
+				<div class="photo-upload">
+					<i class="fa-regular fa-image"></i>
+					<label for="photo-input" class="upload-btn">+ Ajouter photo</label>
+					<input type="file" id="photo-input" accept="image/jpeg, image/png" required>
+					<p>jpg, png : 4mo max</p>
+					<div class="image-preview"></div>
+				</div>
+
+				<label for="photo-title">Titre</label>
+				<input type="text" id="photo-title" required>
+
+				<label for="photo-category">Catégorie</label>
+				<select id="photo-category" required>
+					<option value="">Sélectionnez une catégorie</option>
+
+				</select>
+
+				<div class="form-separator"></div>
+
+				<button type="submit" id="validate-btn">Valider</button>
+			</form>
+			<button id="back-btn">Retour</button>
+		</div>
+	</div>
+</div>
 <script src="script.js"></script>
+<script src="auth-ui.js"></script>
 </body>
 </html>

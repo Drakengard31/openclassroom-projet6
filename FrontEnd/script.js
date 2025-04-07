@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const addPhotoForm = document.getElementById('add-photo-form');
     const validateBtn = document.getElementById('validate-btn');
 
-    // Vérifier l'existence des éléments avant d'ajouter les écouteurs d'événements
 
     // Ouvrir la modale
     if (editButton) {

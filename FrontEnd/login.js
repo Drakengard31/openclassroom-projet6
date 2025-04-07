@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Fonctions d'authentification existantes
+    // Fonctions d'authentification
     function isLoggedIn() {
         return !!localStorage.getItem('authToken');
     }
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateUIForAuthState();
     }
 
-    // Gestion des travaux (ton code existant)
+    // Gestion des travaux
     const apiUrl = 'http://localhost:5678/api/works';
     const gallery = document.querySelector('.gallery');
 
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Gestion des filtres (ton code existant)
+    // Gestion des filtres
     function setupFilters() {
         const editBtn = document.querySelector('.edit-button');
         if (!editBtn) return;
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialisation (ton code existant)
+    // Initialisation
     async function init() {
         setupAdminUI();
         const works = await fetchWorks();
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     init();
 
-    // Fonctions protégées (ton code existant)
+    // Fonctions protégées
     async function deleteWork(workId) {
         if (!isLoggedIn()) {
             alert('Veuillez vous connecter');

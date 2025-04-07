@@ -85,7 +85,7 @@ h2{
 	color: #1D6154
 }
 h3 {
-	margin-left: 220px;
+	margin-left: 270px;
 	font-size: 30px;
 }
 .category-filters{
@@ -261,7 +261,7 @@ footer nav ul {
 	background-color: white;
 	padding: 30px;
 	border-radius: 10px;
-	width: 50%;
+	width: 40%;
 	position: relative;
 }
 
@@ -318,7 +318,7 @@ footer nav ul {
 }
 
 .photo-upload {
-	border: 1px dashed #B9C5CC;
+	background-color: #E8F1F6;
 	padding: 20px;
 	text-align: center;
 	margin: 20px 0;

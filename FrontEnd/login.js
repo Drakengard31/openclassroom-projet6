@@ -1,4 +1,4 @@
-import {updateUIForAuthState} from './auth-ui.js';
+import { updateUIForAuthState, logout } from './auth-ui.js';
 import { authenticate } from './api-auth.js';
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayWorks(works, categoryId = 0) {
-        if (!gallery) return; // Vérification que gallery existe
+        if (!gallery) return;
 
         gallery.innerHTML = '';
         const filteredWorks = categoryId === 0
@@ -63,14 +63,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!editBtn) return;
 
         const filters = document.querySelector('.category-filters');
-        if (!filters) return; // Vérification que filters existe
+        if (!filters) return;
 
         const filterBtns = document.querySelectorAll('.filter-btn');
-        if (filterBtns.length === 0) return; // Vérification que filterBtns existe
+        if (filterBtns.length === 0) return;
 
-        editBtn.addEventListener('click', function() {
-            filters.style.display = filters.style.display === 'none' ? 'flex' : 'none';
-            editBtn.style.display = 'none';
+        editBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (modal) modal.style.display = 'flex';
+            loadModalGallery();
         });
 
         filterBtns.forEach(btn => {
@@ -85,18 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialisation
-    async function init() {
-        setupAdminUI();
-        const works = await fetchWorks();
-        displayWorks(works);
-        setupFilters();
-    }
-
-    // Fonction de suppression
+    // Fonction de suppression améliorée
     async function deleteWork(workId) {
         if (!isLoggedIn()) {
             alert('Veuillez vous connecter');
+            return;
+        }
+
+        if (!confirm('Voulez-vous vraiment supprimer ce projet ?')) {
             return;
         }
 
@@ -107,7 +104,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (response.ok) {
-                init(); // Rafraîchir la galerie
+                // Rafraîchir les deux galeries
+                loadModalGallery();
+                const works = await fetchWorks();
+                displayWorks(works);
             }
         } catch (error) {
             console.error('Erreur:', error);
@@ -128,11 +128,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const addPhotoView = document.getElementById('add-photo-view');
     const addPhotoBtn = document.getElementById('add-photo-btn');
     const backBtn = document.getElementById('back-btn');
+    const backArrow = document.querySelector('.back-arrow');
     const photoInput = document.getElementById('photo-input');
     const imagePreview = document.querySelector('.image-preview');
     const addPhotoForm = document.getElementById('add-photo-form');
     const validateBtn = document.getElementById('validate-btn');
-
 
     // Ouvrir la modale
     if (editButton) {
@@ -147,6 +147,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (closeModal && modal) {
         closeModal.addEventListener('click', function() {
             modal.style.display = 'none';
+            // S'assurer que l'interface utilisateur est correctement configurée après fermeture
+            setupUI();
         });
     }
 
@@ -155,6 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 modal.style.display = 'none';
+                // S'assurer que l'interface utilisateur est correctement configurée après fermeture
+                setupUI();
             }
         });
     }
@@ -168,9 +172,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Revenir à la vue galerie
-    if (backBtn && addPhotoView && galleryView) {
-        backBtn.addEventListener('click', function() {
+    // Revenir à la vue galerie (avec la flèche)
+    if (backArrow && addPhotoView && galleryView) {
+        backArrow.addEventListener('click', function() {
             addPhotoView.style.display = 'none';
             galleryView.style.display = 'block';
         });
@@ -260,7 +264,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Rechargement des galeries
                 loadModalGallery();
-                init();
+                const works = await fetchWorks();
+                displayWorks(works);
 
             } catch (error) {
                 console.error('Erreur:', error);
@@ -277,10 +282,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Charger la galerie dans la modale
+    // Charger la galerie dans la modale avec icônes de poubelle
     function loadModalGallery() {
         const modalGallery = document.querySelector('.modal-gallery');
-        if (!modalGallery) return; // Vérification que modalGallery existe
+        if (!modalGallery) return;
 
         fetch(apiUrl)
             .then(response => response.json())
@@ -297,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const deleteIcon = document.createElement('span');
                     deleteIcon.className = 'delete-icon';
-                    deleteIcon.innerHTML = '&times;';
+                    deleteIcon.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
                     deleteIcon.addEventListener('click', function(e) {
                         e.stopPropagation();
                         deleteWork(work.id);
@@ -313,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Charger les catégories pour le formulaire
     function loadCategories() {
         const categorySelect = document.getElementById('photo-category');
-        if (!categorySelect) return; // Vérification que categorySelect existe
+        if (!categorySelect) return;
 
         fetch('http://localhost:5678/api/categories')
             .then(response => response.json())
@@ -327,6 +332,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     categorySelect.appendChild(option);
                 });
             });
+    }
+
+    // Fonction pour configurer l'interface utilisateur
+    function setupUI() {
+        const categoryFilters = document.querySelector('.category-filters');
+        const editButton = document.querySelector('.edit-button');
+
+        if (isLoggedIn()) {
+            // Utilisateur connecté : afficher le bouton modifier, cacher les filtres
+            if (editButton) editButton.style.display = 'inline-flex';
+            if (categoryFilters) categoryFilters.style.display = 'none';
+
+            // Configuration de l'interface admin supplémentaire
+            setupAdminUI();
+        } else {
+            // Utilisateur déconnecté : afficher les filtres, cacher le bouton modifier
+            if (editButton) editButton.style.display = 'none';
+            if (categoryFilters) categoryFilters.style.display = 'flex';
+        }
+    }
+
+    // Initialiser l'application
+    function init() {
+        // Charger les travaux au démarrage
+        fetchWorks().then(works => {
+            displayWorks(works);
+        });
+
+        // Mettre en place l'interface utilisateur selon l'état de connexion
+        setupUI();
+
+        // Configure les filtres
+        setupFilters();
     }
 
     // Initialiser l'application

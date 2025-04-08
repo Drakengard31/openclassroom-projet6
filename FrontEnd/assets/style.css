@@ -316,6 +316,13 @@ footer nav ul {
 	font-family: 'Syne', sans-serif;
 	margin-left: 200px;
 }
+.back-arrow {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	cursor: pointer;
+	font-size: 20px;
+}
 
 .photo-upload {
 	background-color: #E8F1F6;

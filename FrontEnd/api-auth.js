@@ -1,4 +1,3 @@
-// URL de base de l'API - À adapter selon ton environnement
 const API_ENDPOINT = 'http://localhost:5678/api';
 
 /**

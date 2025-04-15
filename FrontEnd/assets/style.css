@@ -85,7 +85,7 @@ h2{
 	color: #1D6154
 }
 h3 {
-	margin-left: 320px;
+	margin-left: 310px;
 	font-size: 20px;
 	margin-bottom: 20px;
 }
@@ -380,7 +380,7 @@ footer nav ul {
 }
 
 .image-preview img {
-	width: 100%;
+	width: 50%;
 	height: 100%;
 	object-fit: cover;
 }
@@ -388,5 +388,26 @@ footer nav ul {
 .form-separator {
 	border-top: 1px solid #B3B3B3;
 	margin: 20px 0;
+}
+.edition-bar {
+	background-color: black;
+	color: white;
+	padding: 11px 0;
+	width: 100%;
+	text-align: center;
+	font-family: 'Work Sans', sans-serif;
+	font-size: 16px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+}
+
+.edition-bar i {
+	font-size: 16px;
 }
 

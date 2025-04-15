@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error('Erreur réseau');
-            return await response.json();
+            return await response.json(); //
         } catch (error) {
             console.error('Erreur:', error);
             return [];
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ? works
             : works.filter(work => work.categoryId === categoryId);
 
-        filteredWorks.forEach(work => {
+        filteredWorks.forEach(work => { //pour chaque works je fait ça
             const figure = document.createElement('figure');
             figure.dataset.id = work.id;
 
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (filterBtns.length === 0) return;
 
         editBtn.addEventListener('click', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // annule le comportement part défauts
             if (modal) modal.style.display = 'flex';
             loadModalGallery();
         });

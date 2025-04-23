@@ -180,6 +180,65 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+     //Vérification de validité du formulaire
+    if (addPhotoForm && validateBtn && photoInput) {
+        // Fonction pour vérifier si le formulaire est valide
+        function checkFormValidity() {
+            const title = document.getElementById('photo-title');
+            const category = document.getElementById('photo-category');
+            const imageFile = photoInput.files[0];
+
+            // Vérifie si tous les champs requis sont remplis
+            const isValid = title && title.value.trim() !== ''
+                && category && category.value !== ''
+                && imageFile;
+
+            // Met à jour l'apparence du bouton
+            if (isValid) {
+                validateBtn.classList.add('valid-button');
+            } else {
+                validateBtn.classList.remove('valid-button');
+            }
+
+            return isValid;
+        }
+
+        // Ajouter des écouteurs d'événements pour chaque champ
+        document.getElementById('photo-title').addEventListener('input', checkFormValidity);
+        document.getElementById('photo-category').addEventListener('change', checkFormValidity);
+        photoInput.addEventListener('change', function(e) {
+            // La prévisualisation existante reste inchangée
+            const file = e.target.files[0];
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Seuls les JPG et PNG sont acceptés');
+                    return;
+                }
+
+                if (file.size > 4 * 1024 * 1024) {
+                    alert('Le fichier est trop volumineux (max 4Mo)');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+                    imagePreview.style.display = 'block';
+                    // Vérifier la validité après chargement de l'image
+                    checkFormValidity();
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Vérifier immédiatement
+            checkFormValidity();
+        });
+
+        // Vérifier initialement au chargement de la page
+        checkFormValidity();
+    }
+
     // Prévisualisation de l'image
     if (photoInput && imagePreview) {
         photoInput.addEventListener('change', function(e) {

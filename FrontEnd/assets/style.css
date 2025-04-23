@@ -324,6 +324,11 @@ footer nav ul {
 	background: #A7A7A7;
 	border: 1px;
 	color: white;
+	cursor: pointer;
+}
+#validate-btn.valid-button{
+	background: #1D6154 !important;
+	cursor: pointer;
 }
 #add-photo-form{
 	display: flex;

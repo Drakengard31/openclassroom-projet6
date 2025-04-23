@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('photo-title').addEventListener('input', checkFormValidity);
         document.getElementById('photo-category').addEventListener('change', checkFormValidity);
         photoInput.addEventListener('change', function(e) {
-            // La prévisualisation existante reste inchangée
+
             const file = e.target.files[0];
             if (file) {
                 const validTypes = ['image/jpeg', 'image/png'];
